@@ -20,3 +20,45 @@ rad.json
 *.flf
 #Test results file
 TestResults.xml
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.log
+
+# Virtual env
+.venv/
+venv/
+ENV/
+env/
+
+# Django
+db.sqlite3
+*.sqlite3
+media/
+staticfiles/
+
+# Django secret / env
+.env
+docker/.env
+
+# OS / IDE
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Node (если потом будет фронт)
+node_modules/
+dist/
+build/
+
+# Test/cache
+.pytest_cache/
+.mypy_cache/
+.coverage
+
+# Docker
+*.backup
