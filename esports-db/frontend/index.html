@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Esports DB — Главная</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./assets/css/styles.css" />
+</head>
+
+<body>
+  <header class="header">
+    <div class="container header__inner">
+      <div class="brand">
+        <div class="brand__mark">E</div>
+        <div class="brand__text">
+          <div class="brand__title">Esports DB</div>
+          <div class="brand__subtitle">Турниры, матчи, команды</div>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <a class="nav__link nav__link--active" href="./index.html">Главная</a>
+        <!-- позже добавим страницы: турниры, команды, игры -->
+        <a class="nav__link nav__link--disabled" href="#" title="Скоро">Турниры</a>
+        <a class="nav__link nav__link--disabled" href="#" title="Скоро">Матчи</a>
+        <a class="nav__link nav__link--disabled" href="#" title="Скоро">Команды</a>
+      </nav>
+
+      <div class="header__actions">
+        <button id="btnRefresh" class="btn btn--ghost" type="button">Обновить</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container main">
+    <section class="hero">
+      <div class="hero__content">
+        <h1 class="hero__title">Главная панель киберспортивных событий</h1>
+        <p class="hero__lead">
+          Здесь собраны текущие и предстоящие турниры, ближайшие матчи и популярные сущности на основе данных вашей PostgreSQL.
+        </p>
+
+        <div class="hero__controls">
+          <div class="search">
+            <input id="searchInput" class="search__input" type="search" placeholder="Поиск по турнирам, играм, командам..." />
+            <div class="search__hint">Enter не нужен — фильтруется автоматически</div>
+          </div>
+
+          <div class="pillbar" role="group" aria-label="Фильтр турниров">
+            <button class="pill pill--active" data-status="active" type="button" aria-pressed="true">Текущие</button>
+            <button class="pill" data-status="upcoming" type="button" aria-pressed="false">Предстоящие</button>
+            <button class="pill" data-status="all" type="button" aria-pressed="false">Все</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero__stats" aria-label="Сводные показатели">
+        <div class="stat">
+          <div class="stat__label">Турниров (выборка)</div>
+          <div id="statTournaments" class="stat__value">—</div>
+        </div>
+        <div class="stat">
+          <div class="stat__label">Матчей (ближайшие)</div>
+          <div id="statMatches" class="stat__value">—</div>
+        </div>
+        <div class="stat">
+          <div class="stat__label">Популярных игр</div>
+          <div id="statGames" class="stat__value">—</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid">
+      <!-- Турниры -->
+      <section class="panel panel--wide">
+        <div class="panel__head">
+          <h2 class="panel__title">Турниры</h2>
+          <div class="panel__meta">
+            <span id="tournamentsMeta" class="muted">Загрузка…</span>
+          </div>
+        </div>
+        <div id="tournamentsList" class="cards cards--tournaments" aria-live="polite"></div>
+      </section>
+
+      <!-- Ближайшие матчи -->
+      <section class="panel">
+        <div class="panel__head">
+          <h2 class="panel__title">Ближайшие матчи</h2>
+          <div class="panel__meta">
+            <span class="muted">Следующие 10 событий</span>
+          </div>
+        </div>
+
+        <div id="matchesList" class="matches" aria-live="polite"></div>
+      </section>
+
+      <!-- Популярные игры -->
+      <section class="panel">
+        <div class="panel__head">
+          <h2 class="panel__title">Популярные игры</h2>
+          <div class="panel__meta">
+            <span class="muted">Топ по количеству турниров</span>
+          </div>
+        </div>
+
+        <div id="gamesList" class="mini-list" aria-live="polite"></div>
+      </section>
+
+      <!-- Популярные команды -->
+      <section class="panel">
+        <div class="panel__head">
+          <h2 class="panel__title">Популярные команды</h2>
+          <div class="panel__meta">
+            <span class="muted">Топ по участию</span>
+          </div>
+        </div>
+
+        <div id="teamsList" class="mini-list" aria-live="polite"></div>
+      </section>
+    </section>
+
+    <section class="footer-note">
+      <div class="footer-note__box">
+        <div class="footer-note__title">Подключение к backend</div>
+        <div class="footer-note__text">
+          Если данных пока нет — заполни их через <span class="kbd">/admin</span> и нажми “Обновить”.
+          Если API ещё не готово — интерфейс покажет демо-данные.
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <div class="muted">© Esports DB — учебный проект</div>
+      <div class="muted">Frontend: HTML/CSS/JS • Backend: Django/PostgreSQL</div>
+    </div>
+  </footer>
+
+  <script type="module" src="./assets/js/app.js"></script>
+</body>
+</html>
