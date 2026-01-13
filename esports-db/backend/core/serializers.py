@@ -73,3 +73,47 @@ class TournamentTeamSerializer(serializers.ModelSerializer):
     class Meta:
         model = TournamentTeam
         fields = ["tournament", "tournament_name", "team", "team_name"]
+
+class TeamMiniSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Team
+        fields = ["id", "name", "logo_url", "country"]
+
+
+class TournamentDetailSerializer(serializers.ModelSerializer):
+    """
+    Детальная выдача турнира для страницы турнира:
+    - базовые поля турнира
+    - участники (teams)
+    - матчи с результатами
+    - итоговые места (standings)
+    """
+    game_title = serializers.CharField(source="game.title", read_only=True)
+
+    participants = serializers.SerializerMethodField()
+    matches = serializers.SerializerMethodField()
+    standings = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Tournament
+        fields = [
+            "id", "name", "game", "game_title",
+            "start_date", "end_date", "prize_pool", "format", "status",
+            "participants", "matches", "standings",
+        ]
+
+    def get_participants(self, obj):
+        # через TournamentTeam (many-to-many)
+        teams_qs = Team.objects.filter(
+            tournamentteam__tournament=obj
+        ).distinct().order_by("name")
+        return TeamMiniSerializer(teams_qs, many=True).data
+
+    def get_matches(self, obj):
+        # матчи + вложенный result уже есть в MatchSerializer
+        qs = Match.objects.filter(tournament=obj).order_by("match_date", "id")
+        return MatchSerializer(qs, many=True).data
+
+    def get_standings(self, obj):
+        qs = Standing.objects.filter(tournament=obj).order_by("place", "id")
+        return StandingSerializer(qs, many=True).data

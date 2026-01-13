@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.conf import settings
 
 class Game(models.Model):
     title = models.CharField(max_length=120, unique=True)
@@ -38,6 +38,8 @@ class Team(models.Model):
     name = models.CharField(max_length=120, unique=True)
     logo_url = models.URLField(blank=True, null=True)
     country = models.CharField(max_length=80)
+    
+    is_approved = models.BooleanField(default=True)
 
     def __str__(self):
         return self.name
@@ -105,5 +107,133 @@ class Standing(models.Model):
     def __str__(self):
         return f"{self.tournament.name}: {self.team.name} place {self.place}"
 
+class UserProfile(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="profile")
+    bio = models.TextField(blank=True, default="")
+    avatar_url = models.URLField(blank=True, default="")
 
-# Create your models here.
+    def __str__(self):
+        return f"Profile({self.user.username})"
+
+
+class FavoriteTournament(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="favorite_tournaments")
+    tournament = models.ForeignKey("core.Tournament", on_delete=models.CASCADE, related_name="favorited_by")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("user", "tournament")
+
+
+class FavoriteTeam(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="favorite_teams")
+    team = models.ForeignKey("core.Team", on_delete=models.CASCADE, related_name="favorited_by")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("user", "team")
+
+
+class ViewHistory(models.Model):
+    ITEM_TYPES = [
+        ("tournament", "Tournament"),
+        ("team", "Team"),
+        ("game", "Game"),
+        ("match", "Match"),
+    ]
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="view_history")
+    item_type = models.CharField(max_length=20, choices=ITEM_TYPES)
+    item_id = models.PositiveIntegerField()
+    viewed_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["user", "item_type", "viewed_at"]),
+        ]
+class TeamApplication(models.Model):
+    STATUS_CHOICES = [
+        ("pending", "ожидает"),
+        ("approved", "одобрена"),
+        ("rejected", "отклонена"),
+    ]
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="team_applications",
+    )
+    tournament = models.ForeignKey(
+        "core.Tournament",
+        on_delete=models.CASCADE,
+        related_name="team_applications",
+    )
+
+    # данные заявки (можно расширять)
+    team_name = models.CharField(max_length=120)
+    country = models.CharField(max_length=80, blank=True, default="")
+    logo_url = models.URLField(blank=True, null=True)
+
+
+    roster_json = models.JSONField(blank=True, default=list)
+
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pending")
+    admin_comment = models.TextField(blank=True, default="")
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    decided_at = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        indexes = [
+            models.Index(fields=["tournament", "status"]),
+            models.Index(fields=["user", "created_at"]),
+        ]
+
+    def __str__(self):
+        return f"Application({self.team_name} -> {self.tournament.name}, {self.status})"
+
+class TeamRegistrationRequest(models.Model):
+    STATUS_CHOICES = [
+        ("pending", "ожидает"),
+        ("approved", "одобрено"),
+        ("rejected", "отклонено"),
+    ]
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="team_requests",
+    )
+    tournament = models.ForeignKey(
+        "core.Tournament",
+        on_delete=models.CASCADE,
+        related_name="team_requests",
+    )
+
+    # Анкета / данные команды
+    team_name = models.CharField(max_length=120)
+    country = models.CharField(max_length=80, blank=True, default="")
+    logo_url = models.URLField(blank=True, null=True)
+
+    # Состав (просто JSON, чтобы не плодить таблицы заявок)
+    # Пример: [{"nickname":"n1","real_name":"","role":"captain"}, ...]
+    roster = models.JSONField(default=list, blank=True)
+
+    comment = models.TextField(blank=True, default="")
+
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pending")
+    admin_comment = models.TextField(blank=True, default="")
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    decided_at = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        indexes = [
+            models.Index(fields=["tournament", "status", "created_at"]),
+            models.Index(fields=["user", "created_at"]),
+        ]
+
+    def __str__(self):
+        return f"Req({self.team_name}) -> {self.tournament_id} [{self.status}]"

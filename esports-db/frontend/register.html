@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Регистрация — GAMEZGU</title>
+
+  <link rel="stylesheet" href="./assets/css/auth.css" />
+  <link rel="stylesheet" href="./assets/css/register.css" />
+</head>
+
+<body>
+  <section class="card">
+    <header class="head">
+      <div class="brand">
+        <div class="logo">E</div>
+        <div>GAMEZGU</div>
+      </div>
+      <div class="tag">Register</div>
+    </header>
+
+    <div class="body">
+      <h1>Регистрация</h1>
+
+      <form id="regForm" novalidate>
+        <label>
+          Username
+          <input name="username" autocomplete="username" placeholder="например: cyber_user" required />
+        </label>
+
+        <label>
+          Email (необязательно)
+          <input name="email" type="email" autocomplete="email" placeholder="name@mail.com" />
+        </label>
+
+        <label>
+          Пароль (минимум 8 символов)
+          <input name="password" type="password" minlength="8" autocomplete="new-password" placeholder="Введите пароль" required />
+        </label>
+
+        <div class="actions">
+          <button class="btn btn-primary" type="submit">Создать аккаунт</button>
+          <a class="btn btn-ghost" href="./index.html">На главную</a>
+        </div>
+
+        <div id="msg" class="msg"></div>
+      </form>
+    </div>
+
+    <footer class="foot">
+      <a class="link" href="./login.html">Уже есть аккаунт? Войти</a>
+    </footer>
+  </section>
+
+  <script type="module">
+    import { API_BASE } from "./assets/js/api.js";
+    import { setToken } from "./assets/js/auth.js";
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const form = document.getElementById("regForm");
+      const msg = document.getElementById("msg");
+
+      if (!form || !msg) {
+        console.error("regForm или msg не найдены в DOM. Проверь id в register.html");
+        return;
+      }
+
+      function setMessage(text, cls) {
+        msg.className = "msg" + (cls ? " " + cls : "");
+        msg.textContent = text;
+      }
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        setMessage("Отправка…");
+
+        const fd = new FormData(form);
+        const payload = {
+          username: (fd.get("username") || "").toString().trim(),
+          email: (fd.get("email") || "").toString().trim(),
+          password: (fd.get("password") || "").toString(),
+        };
+
+        if (!payload.username || !payload.password) {
+          setMessage("Заполни username и пароль.", "err");
+          return;
+        }
+        if (payload.password.length < 8) {
+          setMessage("Пароль должен быть минимум 8 символов.", "err");
+          return;
+        }
+
+        try {
+          const res = await fetch(`${API_BASE}/auth/register/`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+
+          const data = await res.json().catch(() => ({}));
+
+          if (!res.ok) {
+            const errText = data?.detail || JSON.stringify(data) || `HTTP ${res.status}`;
+            setMessage(`Ошибка регистрации: ${errText}`, "err");
+            return;
+          }
+
+          if (!data.token) {
+            setMessage("Регистрация успешна, но токен не получен. Проверь бэкенд.", "err");
+            return;
+          }
+
+          setToken(data.token);
+          setMessage("Готово. Переходим в кабинет…", "ok");
+          window.location.href = "./cabinet.html";
+        } catch (err) {
+          setMessage("Сервер недоступен или ошибка сети.", "err");
+        }
+      });
+    });
+  </script>
+</body>
+</html>
+
+
+
+
+

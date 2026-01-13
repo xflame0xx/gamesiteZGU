@@ -1,7 +1,7 @@
 export function formatMoney(value) {
   const n = Number(value || 0);
   if (!Number.isFinite(n)) return "—";
-  return new Intl.NumberFormat("ru-RU").format(n) + " $";
+  return new Intl.NumberFormat("ru-RU").format(n) + " ₽ ";
 }
 
 export function formatDateRange(start, end) {

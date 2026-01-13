@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Матч — GAMEZGU </title>
+  <link rel="stylesheet" href="./assets/css/match.css" />
+</head>
+
+<body>
+  <header class="topbar">
+    <div class="wrap topbar__inner">
+      <a class="brand" href="./index.html">
+        <div class="brand__mark">E</div>
+        <div class="brand__text">
+          <div class="brand__title">GAMEZGU</div>
+          <div class="brand__sub">Страница матча</div>
+        </div>
+      </a>
+
+      <nav class="nav">
+        <a class="nav__link" href="./index.html">Главная</a>
+        <a class="nav__link" href="./tournaments.html">Турниры</a>
+        <a class="nav__link nav__link--active" href="./matches.html">Матчи</a>
+      </nav>
+
+      <a class="btn btn--ghost" href="./matches.html">← Назад</a>
+    </div>
+  </header>
+
+  <main class="wrap main">
+    <section class="panel">
+      <div class="head">
+        <div>
+          <h1 id="mTitle" class="title">Матч</h1>
+          <div id="mMeta" class="meta">—</div>
+        </div>
+        <div id="mBadge"></div>
+      </div>
+
+      <div class="kpis">
+        <div class="kpi">
+          <div class="kpi__label">Турнир</div>
+          <div class="kpi__value" id="mTournament">—</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi__label">Этап</div>
+          <div class="kpi__value" id="mRound">—</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi__label">Счёт</div>
+          <div class="kpi__value" id="mScore">—</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi__label">Победитель</div>
+          <div class="kpi__value" id="mWinner">—</div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="row">
+        <a id="toTournament" class="btn btn--primary" href="./tournaments.html">Открыть турнир</a>
+        <a id="vodLink" class="btn btn--ghost hidden" target="_blank" rel="noreferrer">Ссылка на запись</a>
+      </div>
+
+      <div id="msg" class="msg"></div>
+    </section>
+  </main>
+
+  <script type="module" src="./assets/js/match_page.js"></script>
+</body>
+</html>

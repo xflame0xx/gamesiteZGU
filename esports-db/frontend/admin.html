@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Админ — GAMEZGU</title>
+  <link rel="stylesheet" href="./assets/css/styles.css" />
+</head>
+
+<body>
+  <header class="header">
+    <div class="container header__inner">
+      <div class="brand">
+        <div class="brand__mark">E</div>
+        <div class="brand__text">
+          <div class="brand__title">GAMEZGU</div>
+          <div class="brand__subtitle">Администрирование</div>
+        </div>
+      </div>
+
+      <div class="header__actions">
+        <a class="btn btn--ghost" href="./index.html">На главную</a>
+        <button id="logout" class="btn btn--ghost" type="button">Выйти</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container main">
+    <section class="panel panel--wide">
+      <div class="panel__head">
+        <h2 class="panel__title">Управление данными (CRUD)</h2>
+        <div id="msg" class="muted">Загрузка…</div>
+      </div>
+
+      <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:12px;">
+        <button class="btn" data-tab="games">Игры</button>
+        <button class="btn" data-tab="tournaments">Турниры</button>
+        <button class="btn" data-tab="teams">Команды</button>
+        <button class="btn" data-tab="players">Игроки</button>
+        <button class="btn" data-tab="matches">Матчи</button>
+      </div>
+
+      <div id="crudBox"></div>
+    </section>
+  </main>
+
+  <script type="module" src="./assets/js/admin.js"></script>
+</body>
+</html>
+

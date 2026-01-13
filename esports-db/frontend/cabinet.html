@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Личный кабинет — GAMEZGU</title>
+  <link rel="stylesheet" href="./assets/css/styles.css" />
+</head>
+
+<body>
+  <header class="header">
+    <div class="container header__inner">
+      <div class="brand">
+        <div class="brand__mark">E</div>
+        <div class="brand__text">
+          <div class="brand__title">GAMEZGU</div>
+          <div class="brand__subtitle">Личный кабинет</div>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <a class="nav__link" href="./index.html">Главная</a>
+        <a class="nav__link" href="./tournaments.html">Турниры</a>
+        <a class="nav__link" href="./matches.html">Матчи</a>
+        <a class="nav__link" href="./teams.html">Команды</a>
+      </nav>
+
+      <div class="header__actions">
+        <a class="btn btn--ghost" href="./index.html">На главную</a>
+        <button id="logout" class="btn btn--ghost" type="button">Выйти</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container main">
+    <section class="panel panel--wide">
+      <div class="panel__head">
+        <h2 class="panel__title">Личный кабинет</h2>
+        <div class="panel__meta" id="metaLine">—</div>
+      </div>
+
+      <div id="msg" class="muted" style="margin-bottom: 10px;"></div>
+
+      <!-- Профиль -->
+      <div id="profile" class="muted">Загрузка профиля…</div>
+
+      <hr style="border-color: rgba(255,255,255,.12); margin: 16px 0;" />
+
+      <!-- Заявка на регистрацию команды -->
+      <section>
+        <h3 style="margin:0 0 10px;">Регистрация команды на турнир</h3>
+        <div class="muted" style="margin-bottom: 12px;">
+          Подать заявку можно только на турниры со статусом <strong>registration</strong>.
+        </div>
+
+        <form id="appForm" class="panel" style="padding: 14px; border-radius: 18px;">
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <label style="display:flex; flex-direction:column; gap:6px;">
+              <span class="muted">Турнир</span>
+              <select id="tournamentSelect" class="search__input" required>
+                <option value="">Загрузка…</option>
+              </select>
+            </label>
+
+            <label style="display:flex; flex-direction:column; gap:6px;">
+              <span class="muted">Название команды</span>
+              <input id="teamName" class="search__input" placeholder="Например: Nova" required />
+            </label>
+
+            <label style="display:flex; flex-direction:column; gap:6px;">
+              <span class="muted">Страна</span>
+              <input id="country" class="search__input" placeholder="Например: RU" required />
+            </label>
+
+            <label style="display:flex; flex-direction:column; gap:6px;">
+              <span class="muted">Логотип (URL, необязательно)</span>
+              <input id="logoUrl" class="search__input" placeholder="https://..." />
+            </label>
+          </div>
+
+          <label style="display:flex; flex-direction:column; gap:6px; margin-top: 12px;">
+            <span class="muted">Состав / информация (произвольно)</span>
+            <textarea id="playersText" class="search__input" rows="4"
+              placeholder="Игроки: никнейм — роль, контакты капитана и т.д."></textarea>
+          </label>
+
+          <div style="display:flex; gap:10px; margin-top: 12px;">
+            <button class="btn" type="submit">Отправить заявку</button>
+            <button id="resetForm" class="btn btn--ghost" type="button">Очистить</button>
+          </div>
+
+          <div id="appMsg" class="muted" style="margin-top:10px;"></div>
+        </form>
+      </section>
+
+      <hr style="border-color: rgba(255,255,255,.12); margin: 16px 0;" />
+
+      <!-- Избранное / история -->
+      <h3 style="margin:0 0 10px;">Избранные турниры</h3>
+      <div id="favT" class="mini-list"></div>
+
+      <h3 style="margin:16px 0 10px;">Избранные команды</h3>
+      <div id="favTeams" class="mini-list"></div>
+
+      <h3 style="margin:16px 0 10px;">История просмотров</h3>
+      <div id="history" class="mini-list"></div>
+    </section>
+  </main>
+
+  <script type="module">
+    import { API_BASE } from "./assets/js/api.js";
+    import { getToken, clearToken, authHeaders } from "./assets/js/auth.js";
+
+    // ---- Guard ----
+    if (!getToken()) window.location.href = "./login.html";
+
+    const metaLine = document.getElementById("metaLine");
+    const msg = document.getElementById("msg");
+
+    const profileEl = document.getElementById("profile");
+    const favT = document.getElementById("favT");
+    const favTeams = document.getElementById("favTeams");
+    const historyEl = document.getElementById("history");
+
+    const appForm = document.getElementById("appForm");
+    const appMsg = document.getElementById("appMsg");
+    const tournamentSelect = document.getElementById("tournamentSelect");
+    const teamName = document.getElementById("teamName");
+    const country = document.getElementById("country");
+    const logoUrl = document.getElementById("logoUrl");
+    const playersText = document.getElementById("playersText");
+
+    function setMsg(text, type) {
+      msg.textContent = text || "";
+      msg.style.color = type === "err" ? "rgba(239,68,68,.95)" : "rgba(255,255,255,.65)";
+    }
+    function setAppMsg(text, type) {
+      appMsg.textContent = text || "";
+      appMsg.style.color = type === "err" ? "rgba(239,68,68,.95)" : "rgba(34,197,94,.95)";
+    }
+
+    document.getElementById("logout").addEventListener("click", async () => {
+      try {
+        await fetch(`${API_BASE}/auth/logout/`, {
+          method: "POST",
+          headers: { "Content-Type":"application/json", ...authHeaders() },
+        });
+      } catch (_) {}
+      clearToken();
+      window.location.href = "./login.html";
+    });
+
+    document.getElementById("resetForm").addEventListener("click", () => {
+      tournamentSelect.value = "";
+      teamName.value = "";
+      country.value = "";
+      logoUrl.value = "";
+      playersText.value = "";
+      setAppMsg("", "");
+    });
+
+    function escapeHTML(s) {
+      return String(s ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function miniItem(title, sub) {
+      const div = document.createElement("div");
+      div.className = "mini";
+      div.innerHTML = `
+        <div class="mini__left">
+          <div class="mini__title">${escapeHTML(title)}</div>
+          <div class="mini__sub">${escapeHTML(sub)}</div>
+        </div>
+      `;
+      return div;
+    }
+
+    async function safeJSON(res) {
+      try { return await res.json(); } catch { return null; }
+    }
+
+    async function loadProfileAndLists() {
+      // profile
+      const meRes = await fetch(`${API_BASE}/auth/me/`, { headers: { ...authHeaders() } });
+      if (meRes.status === 401) { clearToken(); window.location.href = "./login.html"; return; }
+      const me = await safeJSON(meRes) || {};
+
+      metaLine.textContent = `Пользователь: ${me.username || "—"}`;
+      profileEl.innerHTML = `
+        <div><strong>${escapeHTML(me.username || "—")}</strong> <span class="muted">(${escapeHTML(me.email || "без email")})</span></div>
+        <div class="muted" style="margin-top:6px;">Bio: ${escapeHTML(me.bio || "—")}</div>
+        <div class="muted" style="margin-top:6px;">Роль: ${me.is_staff ? "admin/staff" : "user"}</div>
+      `;
+
+      // favorites tournaments
+      const ftRes = await fetch(`${API_BASE}/me/favorites/tournaments/`, { headers: { ...authHeaders() } });
+      const ft = await safeJSON(ftRes) || [];
+      favT.innerHTML = "";
+      (ft || []).forEach(x => favT.appendChild(miniItem(x.tournament_name || "—", `id: ${x.tournament}`)));
+      if (!ft || ft.length === 0) favT.innerHTML = `<div class="muted">Пока пусто.</div>`;
+
+      // favorites teams
+      const fteamRes = await fetch(`${API_BASE}/me/favorites/teams/`, { headers: { ...authHeaders() } });
+      const fteam = await safeJSON(fteamRes) || [];
+      favTeams.innerHTML = "";
+      (fteam || []).forEach(x => favTeams.appendChild(miniItem(x.team_name || "—", `id: ${x.team}`)));
+      if (!fteam || fteam.length === 0) favTeams.innerHTML = `<div class="muted">Пока пусто.</div>`;
+
+      // history
+      const histRes = await fetch(`${API_BASE}/me/history/`, { headers: { ...authHeaders() } });
+      const hist = await safeJSON(histRes) || [];
+      historyEl.innerHTML = "";
+      (hist || []).forEach(x => historyEl.appendChild(
+        miniItem(`${x.item_type} #${x.item_id}`, new Date(x.viewed_at).toLocaleString("ru-RU"))
+      ));
+      if (!hist || hist.length === 0) historyEl.innerHTML = `<div class="muted">История пуста.</div>`;
+    }
+
+    async function loadRegistrationTournaments() {
+      tournamentSelect.innerHTML = `<option value="">Загрузка…</option>`;
+
+      // берём турниры, где идёт регистрация
+      const res = await fetch(`${API_BASE}/tournaments/?status=registration`, { headers: { ...authHeaders() } });
+      const data = await safeJSON(res);
+      const items = Array.isArray(data) ? data : (data?.results ?? []);
+
+      if (!res.ok) {
+        tournamentSelect.innerHTML = `<option value="">Не удалось загрузить</option>`;
+        return;
+      }
+
+      if (!items.length) {
+        tournamentSelect.innerHTML = `<option value="">Нет турниров с регистрацией</option>`;
+        return;
+      }
+
+      tournamentSelect.innerHTML = `<option value="">Выбери турнир</option>`;
+      for (const t of items) {
+        const opt = document.createElement("option");
+        opt.value = t.id;
+        opt.textContent = `${t.name} • ${t.game_title || ""} • ${t.start_date || ""}`;
+        tournamentSelect.appendChild(opt);
+      }
+    }
+
+    // Отправка заявки (нужен endpoint на бэке)
+    appForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      setAppMsg("", "");
+
+      const payload = {
+        tournament: Number(tournamentSelect.value),
+        team_name: teamName.value.trim(),
+        country: country.value.trim(),
+        logo_url: logoUrl.value.trim(),
+        players_text: playersText.value.trim(),
+      };
+
+      if (!payload.tournament) return setAppMsg("Выбери турнир.", "err");
+      if (!payload.team_name) return setAppMsg("Укажи название команды.", "err");
+      if (!payload.country) return setAppMsg("Укажи страну.", "err");
+
+      try {
+        const res = await fetch(`${API_BASE}/me/team-applications/`, {
+          method: "POST",
+          headers: { "Content-Type":"application/json", ...authHeaders() },
+          body: JSON.stringify(payload),
+        });
+
+        const out = await safeJSON(res);
+
+        if (res.status === 401) {
+          clearToken();
+          window.location.href = "./login.html";
+          return;
+        }
+
+        if (!res.ok) {
+          const errText = (out && (out.detail || JSON.stringify(out))) || `HTTP ${res.status}`;
+          setAppMsg(`Ошибка: ${errText}`, "err");
+          return;
+        }
+
+        setAppMsg("Заявка отправлена. Ожидайте подтверждения администратора.", "ok");
+        // опционально очистим форму
+        // document.getElementById("resetForm").click();
+      } catch (err) {
+        setAppMsg("Ошибка сети или сервер недоступен.", "err");
+      }
+    });
+
+    async function boot() {
+      setMsg("Загрузка…");
+      await loadProfileAndLists();
+      await loadRegistrationTournaments();
+      setMsg("");
+    }
+
+    boot().catch(() => setMsg("Не удалось загрузить кабинет.", "err"));
+  </script>
+</body>
+</html>

@@ -1,5 +1,7 @@
 import {
   fetchTournaments,
+  fetchCurrentTournaments,
+  fetchUpcomingTournaments,
   fetchUpcomingMatches,
   fetchPopularGamesFromAPI,
   fetchPopularTeamsFromAPI,
@@ -15,17 +17,36 @@ import {
   createSkeletonMatches,
 } from "./ui.js";
 
+/**
+ * Безопасный поиск элемента
+ */
+function $(id) {
+  return document.getElementById(id);
+}
+
+/**
+ * Безопасный escape
+ */
+function escapeHTML(s) {
+  return String(s ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
 const els = {
-  tournamentsList: document.getElementById("tournamentsList"),
-  matchesList: document.getElementById("matchesList"),
-  gamesList: document.getElementById("gamesList"),
-  teamsList: document.getElementById("teamsList"),
-  tournamentsMeta: document.getElementById("tournamentsMeta"),
-  statTournaments: document.getElementById("statTournaments"),
-  statMatches: document.getElementById("statMatches"),
-  statGames: document.getElementById("statGames"),
-  searchInput: document.getElementById("searchInput"),
-  btnRefresh: document.getElementById("btnRefresh"),
+  tournamentsList: $("tournamentsList"),
+  matchesList: $("matchesList"),
+  gamesList: $("gamesList"),
+  teamsList: $("teamsList"),
+  tournamentsMeta: $("tournamentsMeta"),
+  statTournaments: $("statTournaments"),
+  statMatches: $("statMatches"),
+  statGames: $("statGames"),
+  searchInput: $("searchInput"),
+  btnRefresh: $("btnRefresh"),
   pills: Array.from(document.querySelectorAll(".pill")),
 };
 
@@ -38,47 +59,35 @@ let state = {
   search: "",
 };
 
-function normalizeStatusForFilter(status) {
-  const s = (status || "").toLowerCase();
-  if (s.includes("ид")) return "active";
-  if (s.includes("зав")) return "finished";
-  // регистрация/предстоящий
-  return "upcoming";
-}
-
 function applyFilters() {
-  const q = state.search.trim().toLowerCase();
-
-  let filtered = [...state.tournaments];
-
-  if (state.tournamentFilter !== "all") {
-    filtered = filtered.filter(t => normalizeStatusForFilter(t.status) === state.tournamentFilter);
-  }
+  const q = (state.search || "").trim().toLowerCase();
+  let filtered = [...(state.tournaments || [])];
 
   if (q) {
-    filtered = filtered.filter(t => {
+    filtered = filtered.filter((t) => {
       const hay = `${t.name} ${t.game_title} ${t.format} ${t.status}`.toLowerCase();
       return hay.includes(q);
     });
   }
-
   return filtered;
 }
 
 function renderTournaments(list) {
-  if (!list.length) {
+  if (!els.tournamentsList) return;
+
+  if (!list || list.length === 0) {
     els.tournamentsList.innerHTML = `
       <div class="muted" style="padding:14px;">
         Ничего не найдено. Заполни данные через админку или измени фильтр/поиск.
       </div>
     `;
-    els.tournamentsMeta.textContent = "0 элементов";
-    els.statTournaments.textContent = "0";
+    if (els.tournamentsMeta) els.tournamentsMeta.textContent = "0 элементов";
+    if (els.statTournaments) els.statTournaments.textContent = "0";
     return;
   }
 
-  els.tournamentsMeta.textContent = `Показано: ${list.length}`;
-  els.statTournaments.textContent = String(list.length);
+  if (els.tournamentsMeta) els.tournamentsMeta.textContent = `Показано: ${list.length}`;
+  if (els.statTournaments) els.statTournaments.textContent = String(list.length);
 
   els.tournamentsList.innerHTML = "";
   for (const t of list) {
@@ -104,13 +113,18 @@ function renderTournaments(list) {
 }
 
 function renderMatches(list) {
-  els.statMatches.textContent = String(list.length);
-  if (!list.length) {
+  if (!els.matchesList) return;
+
+  const safe = list || [];
+  if (els.statMatches) els.statMatches.textContent = String(safe.length);
+
+  if (safe.length === 0) {
     els.matchesList.innerHTML = `<div class="muted" style="padding:12px;">Ближайших матчей нет.</div>`;
     return;
   }
+
   els.matchesList.innerHTML = "";
-  for (const m of list) {
+  for (const m of safe) {
     const el = document.createElement("div");
     el.className = "match";
     el.innerHTML = `
@@ -131,12 +145,16 @@ function renderMatches(list) {
 }
 
 function renderMiniList(container, items, mapper) {
-  if (!items.length) {
+  if (!container) return;
+
+  const safe = items || [];
+  if (safe.length === 0) {
     container.innerHTML = `<div class="muted" style="padding:12px;">Нет данных.</div>`;
     return;
   }
+
   container.innerHTML = "";
-  for (const it of items) {
+  for (const it of safe) {
     const el = document.createElement("div");
     el.className = "mini";
     el.innerHTML = mapper(it);
@@ -146,76 +164,67 @@ function renderMiniList(container, items, mapper) {
 
 function computePopularGamesFromTournaments(tournaments, topN = 6) {
   const map = new Map();
-  for (const t of tournaments) {
+  for (const t of tournaments || []) {
     const key = t.game_title || "—";
     map.set(key, (map.get(key) || 0) + 1);
   }
   return [...map.entries()]
     .map(([title, tournaments_count]) => ({ title, tournaments_count }))
-    .sort((a,b) => b.tournaments_count - a.tournaments_count)
+    .sort((a, b) => b.tournaments_count - a.tournaments_count)
     .slice(0, topN);
 }
 
 function computePopularTeamsFallback(matches, topN = 6) {
-  // Если нет отдельного endpoint — грубая оценка по упоминаниям в ближайших матчах
   const map = new Map();
-  for (const m of matches) {
-    map.set(m.team1_name, (map.get(m.team1_name) || 0) + 1);
-    map.set(m.team2_name, (map.get(m.team2_name) || 0) + 1);
+  for (const m of matches || []) {
+    if (m.team1_name) map.set(m.team1_name, (map.get(m.team1_name) || 0) + 1);
+    if (m.team2_name) map.set(m.team2_name, (map.get(m.team2_name) || 0) + 1);
   }
   return [...map.entries()]
     .map(([name, participations]) => ({ name, participations, country: "" }))
-    .sort((a,b) => b.participations - a.participations)
+    .sort((a, b) => b.participations - a.participations)
     .slice(0, topN);
 }
 
-function escapeHTML(s) {
-  return String(s ?? "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
+async function loadTournamentsByPill() {
+  if (state.tournamentFilter === "active") return await fetchCurrentTournaments();
+  if (state.tournamentFilter === "upcoming") return await fetchUpcomingTournaments();
+  return await fetchTournaments();
 }
 
 async function loadAll() {
-  // skeletons
-  createSkeletonCards(els.tournamentsList, 6);
-  createSkeletonMatches(els.matchesList, 6);
-  createSkeletonList(els.gamesList, 6);
-  createSkeletonList(els.teamsList, 6);
+  // skeletons (только если контейнеры существуют)
+  if (els.tournamentsList) createSkeletonCards(els.tournamentsList, 6);
+  if (els.matchesList) createSkeletonMatches(els.matchesList, 6);
+  if (els.gamesList) createSkeletonList(els.gamesList, 6);
+  if (els.teamsList) createSkeletonList(els.teamsList, 6);
 
-  els.tournamentsMeta.textContent = "Загрузка…";
-  els.statTournaments.textContent = "—";
-  els.statMatches.textContent = "—";
-  els.statGames.textContent = "—";
+  if (els.tournamentsMeta) els.tournamentsMeta.textContent = "Загрузка…";
+  if (els.statTournaments) els.statTournaments.textContent = "—";
+  if (els.statMatches) els.statMatches.textContent = "—";
+  if (els.statGames) els.statGames.textContent = "—";
 
   try {
     const [tournaments, matches, gamesMaybe, teams] = await Promise.all([
-      fetchTournaments(),
+      loadTournamentsByPill(),
       fetchUpcomingMatches(10),
-      fetchPopularGamesFromAPI(),
-      fetchPopularTeamsFromAPI(),
+      fetchPopularGamesFromAPI(6),
+      fetchPopularTeamsFromAPI(6),
     ]);
 
-    state.tournaments = tournaments;
-    state.matches = matches;
+    state.tournaments = tournaments || [];
+    state.matches = matches || [];
 
-    // popular games: если API не дал — считаем по турнирам
-    const popularGames = gamesMaybe && gamesMaybe.length
-      ? gamesMaybe
-      : computePopularGamesFromTournaments(tournaments, 6);
+    const popularGames =
+      gamesMaybe && gamesMaybe.length ? gamesMaybe : computePopularGamesFromTournaments(state.tournaments, 6);
     state.popularGames = popularGames;
 
-    // popular teams: если API пустой — fallback по матчам
-    const popularTeams = (teams && teams.length) ? teams : computePopularTeamsFallback(matches, 6);
+    const popularTeams =
+      teams && teams.length ? teams : computePopularTeamsFallback(state.matches, 6);
     state.popularTeams = popularTeams;
 
-    // render
     renderMatches(state.matches);
-
-    const filtered = applyFilters();
-    renderTournaments(filtered);
+    renderTournaments(applyFilters());
 
     renderMiniList(els.gamesList, state.popularGames, (g) => `
       <div class="mini__left">
@@ -225,7 +234,7 @@ async function loadAll() {
       <div class="mini__right">${escapeHTML(String(g.tournaments_count))}</div>
     `);
 
-    els.statGames.textContent = String(state.popularGames.length);
+    if (els.statGames) els.statGames.textContent = String(state.popularGames.length);
 
     renderMiniList(els.teamsList, state.popularTeams.slice(0, 6), (t) => `
       <div class="mini__left">
@@ -234,38 +243,47 @@ async function loadAll() {
       </div>
       <div class="mini__right">${escapeHTML(String(t.participations ?? 0))}</div>
     `);
-
-  } catch (e) {
-    // на практике сюда редко попадём, т.к. api.js уже делает fallback
-    els.tournamentsMeta.textContent = "Ошибка загрузки";
-    els.tournamentsList.innerHTML = `<div class="muted" style="padding:14px;">Не удалось загрузить данные.</div>`;
-    els.matchesList.innerHTML = `<div class="muted" style="padding:12px;">Не удалось загрузить матчи.</div>`;
+  } catch (_) {
+    if (els.tournamentsMeta) els.tournamentsMeta.textContent = "Ошибка загрузки";
+    if (els.tournamentsList) els.tournamentsList.innerHTML = `<div class="muted" style="padding:14px;">Не удалось загрузить данные.</div>`;
+    if (els.matchesList) els.matchesList.innerHTML = `<div class="muted" style="padding:12px;">Не удалось загрузить матчи.</div>`;
   }
 }
 
 function setActivePill(next) {
   state.tournamentFilter = next;
+
   for (const p of els.pills) {
     const isActive = p.dataset.status === next;
     p.classList.toggle("pill--active", isActive);
     p.setAttribute("aria-pressed", String(isActive));
   }
-  renderTournaments(applyFilters());
-}
 
+  loadAll();
+}
 
 function wireEvents() {
-  els.pills.forEach(p => {
-    p.addEventListener("click", () => setActivePill(p.dataset.status));
-  });
+  // pills
+  if (els.pills && els.pills.length) {
+    els.pills.forEach((p) => {
+      p.addEventListener("click", () => setActivePill(p.dataset.status));
+    });
+  }
 
-  els.searchInput.addEventListener("input", (e) => {
-    state.search = e.target.value || "";
-    renderTournaments(applyFilters());
-  });
+  // search
+  if (els.searchInput) {
+    els.searchInput.addEventListener("input", (e) => {
+      state.search = e.target.value || "";
+      renderTournaments(applyFilters());
+    });
+  }
 
-  els.btnRefresh.addEventListener("click", () => loadAll());
+  // refresh button
+  if (els.btnRefresh) {
+    els.btnRefresh.addEventListener("click", () => loadAll());
+  }
 }
 
+// ВАЖНО: модульный скрипт обычно запускается после парсинга, но на всякий случай:
 wireEvents();
 loadAll();

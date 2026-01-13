@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Матчи — GAMEZGU</title>
+  <link rel="stylesheet" href="./assets/css/matches.css" />
+</head>
+
+<body>
+  <header class="topbar">
+    <div class="wrap topbar__inner">
+      <a class="brand" href="./index.html">
+        <div class="brand__mark">E</div>
+        <div class="brand__text">
+          <div class="brand__title">GAMEZGU</div>
+          <div class="brand__sub">Матчи</div>
+        </div>
+      </a>
+
+      <nav class="nav">
+        <a class="nav__link" href="./index.html">Главная</a>
+        <a class="nav__link" href="./tournaments.html">Турниры</a>
+        <a class="nav__link nav__link--active" href="./matches.html">Матчи</a>
+      </nav>
+
+      <!-- ✅ кнопки справа, как на главной -->
+      <div class="topbar__actions" style="display:flex; gap:10px; align-items:center;">
+        <div id="headerActions" style="display:flex; gap:10px; align-items:center;"></div>
+        <a class="btn btn--ghost" href="./index.html">На главную</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap main">
+    <section class="panel">
+      <div class="panel__head">
+        <div>
+          <h1 class="panel__title">Все матчи</h1>
+          <div class="panel__meta">Фильтры: турнир, команда, даты, статус</div>
+        </div>
+        <div id="matchesCount" class="kpi">0</div>
+      </div>
+
+      <form id="filtersForm" class="filters" autocomplete="off">
+        <div class="field">
+          <label class="label" for="fTournament">Турнир</label>
+          <select id="fTournament" class="control">
+            <option value="">Все</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label class="label" for="fTeam">Команда</label>
+          <select id="fTeam" class="control">
+            <option value="">Все</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label class="label" for="fStatus">Статус</label>
+          <select id="fStatus" class="control">
+            <option value="">Все</option>
+            <option value="scheduled">Запланирован</option>
+            <option value="live">Идёт</option>
+            <option value="finished">Завершён</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label class="label" for="fFrom">Дата с</label>
+          <input id="fFrom" class="control" type="date" />
+        </div>
+
+        <div class="field">
+          <label class="label" for="fTo">Дата по</label>
+          <input id="fTo" class="control" type="date" />
+        </div>
+
+        <div class="field field--wide">
+          <label class="label" for="fQ">Поиск (команда)</label>
+          <input id="fQ" class="control" placeholder="Например: Bobiki" />
+        </div>
+
+        <div class="actions">
+          <button class="btn btn--primary" type="submit">Применить</button>
+          <button class="btn" type="button" id="btnReset">Сброс</button>
+        </div>
+      </form>
+
+      <div class="divider"></div>
+
+      <div id="matchesGrid" class="grid"></div>
+      <div id="emptyState" class="empty hidden">Матчи не найдены.</div>
+    </section>
+  </main>
+
+  <script type="module" src="./assets/js/matches.js"></script>
+
+  <script type="module">
+    import { initHeaderActions } from "./assets/js/header_actions.js";
+    initHeaderActions();
+  </script>
+</body>
+</html>

@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Команды — GAMEZGU</title>
+  <link rel="stylesheet" href="./assets/css/teams.css" />
+</head>
+
+<body>
+  <header class="topbar">
+    <div class="wrap topbar__inner">
+      <a class="brand" href="./index.html">
+        <div class="brand__mark">E</div>
+        <div class="brand__text">
+          <div class="brand__title">GAMEZGU</div>
+          <div class="brand__sub">Команды</div>
+        </div>
+      </a>
+
+      <nav class="nav">
+        <a class="nav__link" href="./index.html">Главная</a>
+        <a class="nav__link" href="./tournaments.html">Турниры</a>
+        <a class="nav__link" href="./matches.html">Матчи</a>
+        <a class="nav__link nav__link--active" href="./teams.html">Команды</a>
+      </nav>
+
+      <!-- ✅ справа как на главной -->
+      <div class="topbar__actions" style="display:flex; gap:10px; align-items:center;">
+        <div id="headerActions" style="display:flex; gap:10px; align-items:center;"></div>
+        <a class="btn btn--ghost" href="./index.html">На главную</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap main">
+    <section class="panel">
+      <div class="panel__head">
+        <div>
+          <h1 class="panel__title">Все команды</h1>
+          <div class="panel__meta">Фильтры: игра, страна, поиск</div>
+        </div>
+        <div id="teamsCount" class="kpi">0</div>
+      </div>
+
+      <form id="filtersForm" class="filters" autocomplete="off">
+        <div class="field">
+          <label class="label" for="fGame">Игра</label>
+          <select id="fGame" class="control" aria-label="Фильтр по игре">
+            <option value="">Все</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label class="label" for="fCountry">Страна</label>
+          <select id="fCountry" class="control" aria-label="Фильтр по стране">
+            <option value="">Все</option>
+          </select>
+        </div>
+
+        <div class="field field--wide">
+          <label class="label" for="fQ">Поиск</label>
+          <input id="fQ" class="control" placeholder="Название команды..." aria-label="Поиск по названию команды" />
+        </div>
+
+        <div class="actions">
+          <button class="btn btn--primary" type="submit">Применить</button>
+          <button class="btn" type="button" id="btnReset">Сброс</button>
+        </div>
+      </form>
+
+      <div class="divider"></div>
+
+      <div id="teamsGrid" class="grid"></div>
+      <div id="emptyState" class="empty hidden">Команды не найдены.</div>
+    </section>
+  </main>
+
+  <script type="module" src="./assets/js/teams.js"></script>
+
+  <!-- ✅ добавили общий хедер-логик -->
+  <script type="module">
+    import { initHeaderActions } from "./assets/js/header_actions.js";
+    initHeaderActions();
+  </script>
+</body>
+</html>

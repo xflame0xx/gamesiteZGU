@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Турниры — GAMEZGU</title>
+  <link rel="stylesheet" href="./assets/css/tournaments.css" />
+</head>
+
+<body>
+  <header class="header">
+    <div class="container header__inner">
+      <a class="brand" href="./index.html" aria-label="На главную">
+        <div class="brand__mark">E</div>
+        <div>
+          <div class="brand__title">GAMEZGU</div>
+          <div class="brand__subtitle">Турниры</div>
+        </div>
+      </a>
+
+      <nav class="nav" aria-label="Навигация">
+        <a class="nav__link" href="./index.html">Главная</a>
+        <a class="nav__link nav__link--active" href="./tournaments.html">Турниры</a>
+        <a class="nav__link" href="./matches.html">Матчи</a>
+        <a class="nav__link" href="./teams.html">Команды</a>
+      </nav>
+
+      <!-- ✅ справа как на главной -->
+      <div class="header__actions" style="display:flex; gap:10px; align-items:center;">
+        <div id="headerActions" style="display:flex; gap:10px; align-items:center;"></div>
+        <a class="btn btn--ghost" href="./index.html">На главную</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="container">
+      <section class="panel">
+        <div class="panel__head">
+          <div>
+            <h1 class="panel__title">Все турниры</h1>
+            <div class="panel__meta">Фильтры: игра, даты, статус</div>
+          </div>
+        </div>
+
+        <form class="filters" id="filtersForm" autocomplete="off">
+          <div class="field">
+            <label class="field__label" for="filterGame">Игра</label>
+            <select id="filterGame" class="field__input" name="game" aria-label="Фильтр по игре"></select>
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="filterStatus">Статус</label>
+            <select id="filterStatus" class="field__input" name="status" aria-label="Фильтр по статусу">
+              <option value="">Все</option>
+              <option value="registration">Регистрация</option>
+              <option value="ongoing">Идёт</option>
+              <option value="finished">Завершён</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="filterFrom">Дата с</label>
+            <input id="filterFrom" type="date" class="field__input" name="from" aria-label="Дата начала от" />
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="filterTo">Дата по</label>
+            <input id="filterTo" type="date" class="field__input" name="to" aria-label="Дата начала до" />
+          </div>
+
+          <div class="field field--wide">
+            <label class="field__label" for="filterQ">Поиск</label>
+            <input id="filterQ" class="field__input" name="q" placeholder="Название турнира..." aria-label="Поиск по названию турнира" />
+          </div>
+
+          <div class="filters__actions">
+            <button id="apply" class="btn btn--ghost" type="button">Применить</button>
+            <button id="reset" class="btn" type="button">Сброс</button>
+          </div>
+        </form>
+
+        <hr class="divider" />
+
+        <div id="tournamentsGrid" class="grid"></div>
+      </section>
+    </div>
+  </main>
+
+  <script type="module" src="./assets/js/tournaments.js"></script>
+
+  <!-- ✅ добавили общий хедер-логик -->
+  <script type="module">
+    import { initHeaderActions } from "./assets/js/header_actions.js";
+    initHeaderActions();
+  </script>
+</body>
+</html>

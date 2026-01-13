@@ -1,0 +1,26 @@
+body{
+  background:
+    radial-gradient(1000px 600px at 15% 10%, rgba(34,197,94,.22), transparent 55%),
+    radial-gradient(900px 500px at 80% 5%, rgba(45,212,191,.18), transparent 55%),
+    radial-gradient(900px 600px at 30% 90%, rgba(56,189,248,.14), transparent 50%),
+    var(--bg);
+}
+
+.logo{
+  background: linear-gradient(145deg, rgba(34,197,94,.95), rgba(45,212,191,.65));
+}
+
+input:focus{
+  border-color: rgba(34,197,94,.65);
+  box-shadow: 0 0 0 4px rgba(34,197,94,.14);
+}
+
+.btn-primary{
+  background: linear-gradient(145deg, rgba(34,197,94,.75), rgba(45,212,191,.55));
+  border: 1px solid rgba(45,212,191,.35);
+}
+
+.btn-primary:hover{
+  filter: brightness(1.05);
+  background: linear-gradient(145deg, rgba(34,197,94,.85), rgba(45,212,191,.65));
+}

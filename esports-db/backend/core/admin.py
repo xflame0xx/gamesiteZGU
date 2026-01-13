@@ -55,4 +55,8 @@ class StandingAdmin(admin.ModelAdmin):
     list_filter = ("tournament",)
 
 
-# Register your models here.
+class TeamRegistrationRequestAdmin(admin.ModelAdmin):
+    list_display = ("id", "team_name", "tournament", "user", "status", "created_at")
+    list_filter = ("status", "tournament")
+    search_fields = ("team_name", "user__username", "tournament__name")
+

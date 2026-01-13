@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Команда — GAMEZGU </title>
+  <link rel="stylesheet" href="./assets/css/team.css" />
+</head>
+
+<body>
+  <header class="topbar">
+    <div class="wrap topbar__inner">
+      <a class="brand" href="./index.html">
+        <div class="brand__mark">E</div>
+        <div class="brand__text">
+          <div class="brand__title">GAMEZGU</div>
+          <div class="brand__sub">Страница команды</div>
+        </div>
+      </a>
+
+      <nav class="nav">
+        <a class="nav__link" href="./index.html">Главная</a>
+        <a class="nav__link" href="./tournaments.html">Турниры</a>
+        <a class="nav__link" href="./matches.html">Матчи</a>
+        <a class="nav__link nav__link--active" href="./teams.html">Команды</a>
+      </nav>
+
+      <a class="btn btn--ghost" href="./teams.html">← Назад</a>
+    </div>
+  </header>
+
+  <main class="wrap main">
+    <section class="panel hero">
+      <div class="hero__left">
+        <div class="hero__logo" id="teamLogo">T</div>
+        <div>
+          <h1 id="teamName" class="hero__title">Команда</h1>
+          <div id="teamMeta" class="hero__meta">—</div>
+        </div>
+      </div>
+      <div class="hero__right">
+        <div class="kpi">
+          <div class="kpi__label">Игроков</div>
+          <div class="kpi__value" id="kPlayers">0</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi__label">Текущих турниров</div>
+          <div class="kpi__value" id="kCurrent">0</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi__label">История</div>
+          <div class="kpi__value" id="kHistory">0</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid">
+      <section class="panel">
+        <div class="panel__head">
+          <h2 class="panel__title">Состав</h2>
+          <div class="panel__meta">Игроки команды</div>
+        </div>
+        <div id="roster" class="list"></div>
+        <div id="rosterEmpty" class="empty hidden">Игроки не добавлены.</div>
+      </section>
+
+      <section class="panel">
+        <div class="panel__head">
+          <h2 class="panel__title">Текущие турниры</h2>
+          <div class="panel__meta">Предстоящие и активные</div>
+        </div>
+        <div id="currentTournaments" class="list"></div>
+        <div id="currentEmpty" class="empty hidden">Команда не участвует в текущих турнирах.</div>
+      </section>
+
+      <section class="panel panel--wide">
+        <div class="panel__head">
+          <h2 class="panel__title">История участия</h2>
+          <div class="panel__meta">Места в турнирах</div>
+        </div>
+        <div id="history" class="tableWrap"></div>
+      </section>
+
+      <section class="panel panel--wide">
+        <div class="panel__head">
+          <h2 class="panel__title">Последние результаты</h2>
+          <div class="panel__meta">Последние матчи команды</div>
+        </div>
+        <div id="recentMatches" class="tableWrap"></div>
+      </section>
+    </section>
+
+    <div id="msg" class="msg"></div>
+  </main>
+
+  <script type="module" src="./assets/js/team_page.js"></script>
+</body>
+</html>

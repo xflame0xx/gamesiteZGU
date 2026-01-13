@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Esports DB — Главная</title>
+  <title>Главная</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -16,7 +16,7 @@
       <div class="brand">
         <div class="brand__mark">E</div>
         <div class="brand__text">
-          <div class="brand__title">Esports DB</div>
+          <div class="brand__title">GAMEZGU</div>
           <div class="brand__subtitle">Турниры, матчи, команды</div>
         </div>
       </div>
@@ -24,9 +24,9 @@
       <nav class="nav">
         <a class="nav__link nav__link--active" href="./index.html">Главная</a>
         <!-- позже добавим страницы: турниры, команды, игры -->
-        <a class="nav__link nav__link--disabled" href="#" title="Скоро">Турниры</a>
-        <a class="nav__link nav__link--disabled" href="#" title="Скоро">Матчи</a>
-        <a class="nav__link nav__link--disabled" href="#" title="Скоро">Команды</a>
+        <a class="nav__link" href="./tournaments.html">Турниры</a>
+        <a class="nav__link" href="./matches.html">Матчи</a>
+        <a class="nav__link" href="./teams.html">Команды</a>
       </nav>
 
       <div class="header__actions">
@@ -38,9 +38,9 @@
   <main class="container main">
     <section class="hero">
       <div class="hero__content">
-        <h1 class="hero__title">Главная панель киберспортивных событий</h1>
+        <h1 class="hero__title">Киберспортивные события</h1>
         <p class="hero__lead">
-          Здесь собраны текущие и предстоящие турниры, ближайшие матчи и популярные сущности на основе данных вашей PostgreSQL.
+          Здесь собраны текущие и предстоящие турниры, ближайшие матчи. 
         </p>
 
         <div class="hero__controls">
@@ -59,7 +59,7 @@
 
       <div class="hero__stats" aria-label="Сводные показатели">
         <div class="stat">
-          <div class="stat__label">Турниров (выборка)</div>
+          <div class="stat__label">Турниров (проходят)</div>
           <div id="statTournaments" class="stat__value">—</div>
         </div>
         <div class="stat">
@@ -90,7 +90,7 @@
         <div class="panel__head">
           <h2 class="panel__title">Ближайшие матчи</h2>
           <div class="panel__meta">
-            <span class="muted">Следующие 10 событий</span>
+            <span class="muted">Следующие события</span>
           </div>
         </div>
 
@@ -124,10 +124,10 @@
 
     <section class="footer-note">
       <div class="footer-note__box">
-        <div class="footer-note__title">Подключение к backend</div>
+        <div class="footer-note__title">Demo-версия</div>
         <div class="footer-note__text">
-          Если данных пока нет — заполни их через <span class="kbd">/admin</span> и нажми “Обновить”.
-          Если API ещё не готово — интерфейс покажет демо-данные.
+          Сайт будет улучшаться в дальшейшем. 
+          
         </div>
       </div>
     </section>
@@ -140,6 +140,10 @@
     </div>
   </footer>
 
-  <script type="module" src="./assets/js/app.js"></script>
+ <script type="module">
+  import { mountHeaderAuth } from "./assets/js/header_auth.js";
+  mountHeaderAuth();
+</script>
+<script type="module" src="./assets/js/app.js"></script>
 </body>
 </html>

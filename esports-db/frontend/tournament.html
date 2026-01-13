@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Турнир — GAMEZGU </title>
+  <link rel="stylesheet" href="./assets/css/tournament.css" />
+</head>
+
+<body>
+  <header class="header">
+    <div class="container header__inner">
+      <a class="brand" href="./index.html" aria-label="На главную">
+        <div class="brand__mark">E</div>
+        <div>
+          <div class="brand__title">GAMEZGU</div>
+          <div class="brand__subtitle">Страница турнира</div>
+        </div>
+      </a>
+
+      <nav class="nav" aria-label="Навигация">
+        <a class="nav__link" href="./index.html">Главная</a>
+        <a class="nav__link nav__link--active" href="./tournaments.html">Турниры</a>
+      </nav>
+
+      <div class="header__actions">
+        <a class="btn btn--ghost" href="./tournaments.html">← Назад</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="container">
+
+      <!-- верхняя карточка турнира -->
+      <section class="panel hero">
+        <div class="hero__left">
+          <h1 id="tName" class="hero__title">—</h1>
+          <div id="tMeta" class="hero__meta">—</div>
+        </div>
+        <div class="hero__right">
+          <div id="tBadge"></div>
+        </div>
+
+        <div id="tKpi" class="kpis"></div>
+      </section>
+
+      <section class="grid">
+        <!-- Участники -->
+        <section class="panel">
+          <div class="panel__head">
+            <h2 class="panel__title">Участники</h2>
+            <div id="teamsCount" class="panel__meta">—</div>
+          </div>
+          <div id="teamsList" class="list"></div>
+        </section>
+
+        <!-- Места -->
+        <section class="panel">
+          <div class="panel__head">
+            <h2 class="panel__title">Итоговые места</h2>
+            <div class="panel__meta">Standings</div>
+          </div>
+          <div id="standingsBox"></div>
+        </section>
+      </section>
+
+      <!-- Матчи -->
+      <section class="panel">
+        <div class="panel__head">
+          <h2 class="panel__title">Матчи</h2>
+          <div class="panel__meta">Расписание и результаты</div>
+        </div>
+
+        <div id="matchesBox"></div>
+      </section>
+
+    </div>
+  </main>
+
+  <script type="module" src="./assets/js/tournament_page.js"></script>
+</body>
+</html>
+
+

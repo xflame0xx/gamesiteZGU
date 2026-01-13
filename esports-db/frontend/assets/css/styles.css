@@ -43,7 +43,6 @@ a{ color:inherit; text-decoration:none; }
   background: rgba(11,18,32,.72);
   border-bottom: 1px solid var(--border);
 }
-
 .header__inner{
   display:flex;
   align-items:center;
@@ -352,3 +351,7 @@ a{ color:inherit; text-decoration:none; }
   .cards, .cards--tournaments{ grid-template-columns: 1fr; }
   .hero__title{ font-size: 22px; }
 }
+
+
+
+

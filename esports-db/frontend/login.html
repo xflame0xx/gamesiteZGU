@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Вход — GAMEZGU </title>
+
+  <link rel="stylesheet" href="./assets/css/auth.css" />
+  <link rel="stylesheet" href="./assets/css/login.css" />
+</head>
+
+<body>
+  <section class="card">
+    <header class="head">
+      <div class="brand">
+        <div class="logo">E</div>
+        <div>GAMEZGU</div>
+      </div>
+      <div class="tag">Login</div>
+    </header>
+
+    <div class="body">
+      <h1>Вход</h1>
+
+      <form id="loginForm" novalidate>
+        <label>
+          Username
+          <input name="username" autocomplete="username" placeholder="username" required />
+        </label>
+
+        <label>
+          Пароль
+          <input name="password" type="password" autocomplete="current-password" placeholder="••••••••" required />
+        </label>
+
+        <div class="actions">
+          <button class="btn btn-primary" type="submit">Войти</button>
+          <a class="btn btn-ghost" href="./index.html">На главную</a>
+        </div>
+
+        <div id="msg" class="msg"></div>
+      </form>
+    </div>
+
+    <footer class="foot">
+      <a class="link" href="./register.html">Нет аккаунта? Регистрация</a>
+    </footer>
+  </section>
+
+   <script type="module" src="./assets/js/login.js"></script>
+</body>
+</html>
+
+</body>
+</html>
+
+
+
+
+
+
+
